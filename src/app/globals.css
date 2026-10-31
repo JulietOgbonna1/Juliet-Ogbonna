@@ -1,26 +1,204 @@
 @import "tailwindcss";
 
+/* Theme switched by next-themes via the `.dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Juliet's brand: maroon #6e0d01 on cream #f2e6ce */
+  --bg: #f2e6ce;
+  --bg-2: #eadcbf;
+  --surface: #fbf6ea;
+  --surface-2: #f6eedc;
+  --ink: #23100b;
+  --ink-soft: #5b4038;
+  --muted: #8a7065;
+  --line: rgb(110 13 1 / 0.16);
+  --brand: #6e0d01;
+  --brand-2: #9a1d07;
+  --accent: #6e0d01; /* text accent */
+  --on-brand: #f2e6ce;
+  --glow: rgb(154 29 7 / 0.35);
+  --grid: rgb(110 13 1 / 0.06);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0c0605;
+  --bg-2: #120807;
+  --surface: #160a08;
+  --surface-2: #1d0e0b;
+  --ink: #f6ecd8;
+  --ink-soft: #d4c2ad;
+  --muted: #9b8576;
+  --line: rgb(242 230 206 / 0.1);
+  --brand: #8e1604;
+  --brand-2: #c4321a;
+  --accent: #ff8a66; /* ember highlight of the maroon for contrast on black */
+  --on-brand: #f6ecd8;
+  --glow: rgb(214 58 28 / 0.55);
+  --grid: rgb(242 230 206 / 0.035);
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-accent: var(--accent);
+  --color-on-brand: var(--on-brand);
+  --color-cream: #f2e6ce;
+  --color-maroon: #6e0d01;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-manrope), ui-sans-serif, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee var(--marquee-duration, 40s) linear infinite reverse;
+  --animate-spin-slow: spin 14s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-blink: blink 1s step-end infinite;
+  --animate-shine: shine 3.2s ease-in-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-50% - var(--marquee-gap, 1rem) / 2)); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  @keyframes shine {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Animated conic border — the "glowing card" look from the inspiration, in maroon. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes rotate-angle {
+  to { --angle: 360deg; }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--brand);
+    color: var(--on-brand);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+}
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 font-display text-xs font-semibold uppercase tracking-[0.22em] text-accent;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-semibold transition duration-300;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-on-brand hover:-translate-y-0.5;
+  box-shadow: 0 10px 30px -10px var(--glow), inset 0 1px 0 rgb(255 255 255 / 0.15);
+}
+@utility btn-ghost {
+  @apply btn border border-line text-ink hover:-translate-y-0.5 hover:border-accent hover:text-accent;
+}
+
+@layer components {
+  /* Layered page background: soft grid + ember glows */
+  .bg-atmos {
+    background-image:
+      radial-gradient(60rem 40rem at 85% -10%, var(--glow), transparent 60%),
+      radial-gradient(40rem 30rem at -10% 30%, color-mix(in oklab, var(--glow) 55%, transparent), transparent 65%),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: auto, auto, 56px 56px, 56px 56px;
+  }
+
+  .text-gradient {
+    background: linear-gradient(100deg, var(--accent) 0%, var(--brand-2) 35%, var(--ink) 50%, var(--brand-2) 65%, var(--accent) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Rotating glow border */
+  .glow-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--angle), transparent 0 60%, var(--brand-2) 75%, var(--accent) 85%, transparent 95%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotate-angle 6s linear infinite;
+    opacity: 0.55;
+    transition: opacity 0.4s;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+
+  .marquee-mask {
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  /* Scroll reveal (toggled by <Reveal/>) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--delay, 0ms);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
 }
